@@ -1,0 +1,12 @@
+/Debug/
+/ipch/
+*.opensdf
+*.sdf
+*.sln
+*.suo
+*.db
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.VC.VC.opendb
+/.vs/
