@@ -10,3 +10,4 @@
 *.vcxproj.user
 *.VC.VC.opendb
 /.vs/
+/x64/
