@@ -23,11 +23,11 @@ const String keys =
 "{algorithm      |bm              | stereo matching method (bm or sgbm)                               }"
 "{filter         |wls_conf          | used post-filtering (wls_conf or wls_no_conf)                     }"
 "{no-display     |                  | don't display results                                             }"
-"{no-downscale   |                  | force stereo matching on full-sized views to improve quality      }"
+"{no-downscale   |true                  | force stereo matching on full-sized views to improve quality      }"
 "{dst_conf_path  |None              | optional path to save the confidence map used in filtering        }"
 "{vis_mult       |1.0               | coefficient used to scale disparity map visualizations            }"
-"{max_disparity  |16*10              | parameter of stereo matching                                      }"
-"{window_size    |31                | parameter of stereo matching                                      }"
+"{max_disparity  |16*5              | parameter of stereo matching                                      }"
+"{window_size    |7                | parameter of stereo matching                                      }"
 "{wls_lambda     |8000.0            | parameter of post-filtering                                       }"
 "{wls_sigma      |1.5               | parameter of post-filtering                                       }"
 ;
@@ -327,6 +327,9 @@ int main(int argc, char** argv)
 		namedWindow("filtered disparity", WINDOW_AUTOSIZE);
 		imshow("filtered disparity", filtered_disp_vis);*/
 		//-- Check its extreme values
+
+
+
 		double minVal; double maxVal;
 
 		minMaxLoc(left_disp, &minVal, &maxVal);
@@ -334,7 +337,7 @@ int main(int argc, char** argv)
 		printf("Min disp: %f Max value: %f \n", minVal, maxVal);
 
 		//-- 4. Display it as a CV_8UC1 image
-		left_disp.convertTo(left_disp, CV_8UC1, 255 / (maxVal - minVal));
+		left_disp.convertTo(left_disp, CV_8UC1, 255 / (maxVal/* - minVal*/));
 
 		namedWindow("raw disparity", WINDOW_AUTOSIZE);
 		imshow("raw disparity", left_disp);
@@ -347,7 +350,7 @@ int main(int argc, char** argv)
 		printf("Min disp: %f Max value: %f \n", minVal, maxVal);
 
 		//-- 4. Display it as a CV_8UC1 image
-		filtered_disp.convertTo(filtered_disp, CV_8UC1, 255 / (maxVal - minVal));
+		filtered_disp.convertTo(filtered_disp, CV_8UC1, 255 / (maxVal /*- minVal*/));
 
 		namedWindow("filtered disparity", WINDOW_AUTOSIZE);
 		imshow("filtered disparity", filtered_disp);
