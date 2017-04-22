@@ -14,8 +14,8 @@ const char *windowDisparity = "Disparity";
 int main()
 {
 
-	cv::String image_Name_1("data/im1.bmp"); //расположение 1го кадра
-	cv::String image_Name_2("data/im2.bmp"); //расположение 2го кадра
+	cv::String image_Name_1("data/im0.png"); //расположение 1го кадра
+	cv::String image_Name_2("data/im1.png"); //расположение 2го кадра
 	cv::Mat imgLeft = imread(image_Name_1, cv::IMREAD_GRAYSCALE);
 	cv::Mat imgRight = imread(image_Name_2, cv::IMREAD_GRAYSCALE);
 
