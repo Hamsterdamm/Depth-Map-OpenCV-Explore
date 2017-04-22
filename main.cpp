@@ -27,7 +27,7 @@ const String keys =
 "{dst_conf_path  |None              | optional path to save the confidence map used in filtering        }"
 "{vis_mult       |1.0               | coefficient used to scale disparity map visualizations            }"
 "{max_disparity  |16*5              | parameter of stereo matching                                      }"
-"{window_size    |7                | parameter of stereo matching                                      }"
+"{window_size    |9                | parameter of stereo matching                                      }"
 "{wls_lambda     |8000.0            | parameter of post-filtering                                       }"
 "{wls_sigma      |1.5               | parameter of post-filtering                                       }"
 ;
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 	}
 
 	Mat left_for_matcher, right_for_matcher;
-	Mat left_disp, right_disp;
+	Mat left_disp, right_disp, left_disp_vis;
 	Mat filtered_disp;
 	Mat conf_map = Mat(left.rows, left.cols, CV_8U);
 	conf_map = Scalar(255);
@@ -148,12 +148,18 @@ int main(int argc, char** argv)
 		if (algo == "bm")
 		{
 			//! [matching]
+			cvtColor(left_for_matcher, left_for_matcher, COLOR_BGR2GRAY);
+			cvtColor(right_for_matcher, right_for_matcher, COLOR_BGR2GRAY);
+
 			Ptr<StereoBM> left_matcher = StereoBM::create(max_disp, wsize);
+			Ptr<StereoBM> left_matcher_vis = StereoBM::create(max_disp, wsize);
+
+			left_matcher_vis->compute(left_for_matcher, right_for_matcher, left_disp_vis);
+
 			wls_filter = createDisparityWLSFilter(left_matcher);
 			Ptr<StereoMatcher> right_matcher = createRightMatcher(left_matcher);
 
-			cvtColor(left_for_matcher, left_for_matcher, COLOR_BGR2GRAY);
-			cvtColor(right_for_matcher, right_for_matcher, COLOR_BGR2GRAY);
+
 
 			matching_time = (double)getTickCount();
 			left_matcher->compute(left_for_matcher, right_for_matcher, left_disp);
@@ -332,15 +338,15 @@ int main(int argc, char** argv)
 
 		double minVal; double maxVal;
 
-		minMaxLoc(left_disp, &minVal, &maxVal);
+		minMaxLoc(left_disp_vis, &minVal, &maxVal);
 
 		printf("Min disp: %f Max value: %f \n", minVal, maxVal);
 
 		//-- 4. Display it as a CV_8UC1 image
-		left_disp.convertTo(left_disp, CV_8UC1, 255 / (maxVal/* - minVal*/));
+		left_disp_vis.convertTo(left_disp_vis, CV_8UC1, 255 / (maxVal/* - minVal*/));
 
 		namedWindow("raw disparity", WINDOW_AUTOSIZE);
-		imshow("raw disparity", left_disp);
+		imshow("raw disparity", left_disp_vis);
 
 		//-- Check its extreme values
 		//double minVal; double maxVal;
