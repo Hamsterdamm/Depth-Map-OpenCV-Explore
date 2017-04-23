@@ -23,9 +23,11 @@ int main()
 	cv::String image_Name_2("data/im6.png"); //расположение 2го кадра
 	cv::Mat imgLeft = imread(image_Name_1/*, cv::IMREAD_GRAYSCALE*/);
 	cv::Mat imgRight = imread(image_Name_2/*, cv::IMREAD_GRAYSCALE*/);
+	Mat imgLeftFlipped = Mat(imgLeft.rows, imgLeft.cols, CV_8UC1);
+	Mat imgRightFlipped = Mat(imgLeft.rows, imgLeft.cols, CV_8UC1);
+	flip(imgLeft, imgLeftFlipped, 1);
+	flip(imgRight, imgRightFlipped, 1);
 
-	double lambda = 8000.0;
-	double sigma = 1.5;
 
 	
 
@@ -35,11 +37,12 @@ int main()
 	Mat imgDisparity16SL_prefiter;
 	Mat imgDisparity8UL/* = Mat(imgLeft.rows, imgLeft.cols, CV_8UC1)*/;
 	Mat imgDisparity16SR/* = Mat(imgLeft.rows, imgLeft.cols, CV_16S)*/;
+	Mat imgDisparity16SRFlipped/* = Mat(imgLeft.rows, imgLeft.cols, CV_16S)*/;
 	Mat imgDisparity8UR/* = Mat(imgLeft.rows, imgLeft.cols, CV_8UC1)*/;
 	Mat filtered_disp16S/* = Mat(imgLeft.rows, imgLeft.cols, CV_16S)*/;
 	Mat filtered_disp8U/* = Mat(imgLeft.rows, imgLeft.cols, CV_8UC1)*/;
 
-	Ptr<DisparityWLSFilter> wls_filter;
+
 	
 
 	if (imgLeft.empty() || imgRight.empty())
@@ -66,24 +69,28 @@ int main()
 	//-- 3. Calculate the disparity image
 
 
+	sbmL->compute(imgLeft, imgRight, imgDisparity16SL);
 
+	sbmR->compute(imgRightFlipped, imgLeftFlipped, imgDisparity16SRFlipped);
+	flip(imgDisparity16SRFlipped, imgDisparity16SR, 1);
 
-	wls_filter = createDisparityWLSFilter(sbmL_prefiter);
+	Ptr<DisparityWLSFilter> wls_filter = createDisparityWLSFilter(sbmL_prefiter);
 
 	sbmL_prefiter->compute(imgLeft, imgRight, imgDisparity16SL_prefiter);
 
-	sbmL->compute(imgLeft, imgRight, imgDisparity16SL);
 
-	sbmR->compute(imgRight, imgLeft, imgDisparity16SR);
 	
 
 	//filter
 
 
 
+	double lambda = 8000.0;
+	double sigma = 1.5;
+
 	wls_filter->setLambda(lambda);
 	wls_filter->setSigmaColor(sigma);
-	wls_filter->filter(imgDisparity16SL_prefiter, imgLeft, filtered_disp16S, imgDisparity16SR);
+	wls_filter->filter(imgDisparity16SL, imgLeft, filtered_disp16S,imgDisparity16SR);
 	//conf_map = wls_filter->getConfidenceMap();
 
 	//-- Check its extreme values
