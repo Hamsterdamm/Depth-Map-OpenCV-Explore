@@ -19,8 +19,8 @@ const char *windowDisparity = "Disparity";
 int main()
 {
 
-	cv::String image_Name_1("data/im0.png"); //расположение 1го кадра
-	cv::String image_Name_2("data/im1.png"); //расположение 2го кадра
+	cv::String image_Name_1("data/im2.png"); //расположение 1го кадра
+	cv::String image_Name_2("data/im6.png"); //расположение 2го кадра
 	cv::Mat imgLeft = imread(image_Name_1/*, cv::IMREAD_GRAYSCALE*/);
 	cv::Mat imgRight = imread(image_Name_2/*, cv::IMREAD_GRAYSCALE*/);
 
@@ -49,7 +49,7 @@ int main()
 
 	//-- 2. Call the constructor for StereoBM
 	int ndisparities = 16 * 5;   /**< Range of disparity */
-	int SADWindowSize = 7; /**< Size of the block window. Must be odd */
+	int SADWindowSize = 9; /**< Size of the block window. Must be odd */
 
 	Ptr<StereoBM> sbmL = StereoBM::create(ndisparities, SADWindowSize);
 	Ptr<StereoBM> sbmL_prefiter = StereoBM::create(ndisparities, SADWindowSize);
@@ -65,13 +65,16 @@ int main()
 
 	//-- 3. Calculate the disparity image
 
-	
+
+
+
 	wls_filter = createDisparityWLSFilter(sbmL_prefiter);
 
-	sbmL->compute(imgLeft, imgRight, imgDisparity16SL);
 	sbmL_prefiter->compute(imgLeft, imgRight, imgDisparity16SL_prefiter);
-	sbmR->compute(imgRight, imgLeft, imgDisparity16SR);
 
+	sbmL->compute(imgLeft, imgRight, imgDisparity16SL);
+
+	sbmR->compute(imgRight, imgLeft, imgDisparity16SR);
 	
 
 	//filter
