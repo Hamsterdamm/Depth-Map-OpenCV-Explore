@@ -18,15 +18,15 @@ const String keys =
 "{@left          |data/im0.png      | left view of the stereopair                                       }"
 "{@right         |data/im1.png      | right view of the stereopair                                      }"
 "{GT             |None   | optional ground-truth disparity (MPI-Sintel or Middlebury format) }"
-"{dst_path       |None              | optional path to save the resulting filtered disparity map        }"
-"{dst_raw_path   |None              | optional path to save raw disparity map before filtering          }"
+"{dst_path       |result/dsp_1f.png              | optional path to save the resulting filtered disparity map        }"
+"{dst_raw_path   |result/dsp_1.png              | optional path to save raw disparity map before filtering          }"
 "{algorithm      |bm              | stereo matching method (bm or sgbm)                               }"
 "{filter         |wls_conf          | used post-filtering (wls_conf or wls_no_conf)                     }"
 "{no-display     |                  | don't display results                                             }"
 "{no-downscale   |true                  | force stereo matching on full-sized views to improve quality      }"
 "{dst_conf_path  |None              | optional path to save the confidence map used in filtering        }"
 "{vis_mult       |1.0               | coefficient used to scale disparity map visualizations            }"
-"{max_disparity  |16*5              | parameter of stereo matching                                      }"
+"{max_disparity  |16*10              | parameter of stereo matching                                      }"
 "{window_size    |9                | parameter of stereo matching                                      }"
 "{wls_lambda     |8000.0            | parameter of post-filtering                                       }"
 "{wls_sigma      |1.5               | parameter of post-filtering                                       }"
@@ -288,10 +288,15 @@ int main(int argc, char** argv)
 		cout << "Percent of bad pixels after filtering:  " << percent_bad_after << endl;
 	}
 
-	if (dst_path != "None")
+	double minVal; double maxVal;
+
+	
+
+	/*if (dst_path != "None")
 	{
+		minMaxLoc(filtered_disp, &minVal, &maxVal);
 		Mat filtered_disp_vis;
-		getDisparityVis(filtered_disp, filtered_disp_vis, vis_mult);
+		getDisparityVis(filtered_disp, filtered_disp_vis, 255/(maxVal));
 		imwrite(dst_path, filtered_disp_vis);
 	}
 	if (dst_raw_path != "None")
@@ -299,7 +304,7 @@ int main(int argc, char** argv)
 		Mat raw_disp_vis;
 		getDisparityVis(left_disp, raw_disp_vis, vis_mult);
 		imwrite(dst_raw_path, raw_disp_vis);
-	}
+	}*/
 	if (dst_conf_path != "None")
 	{
 		imwrite(dst_conf_path, conf_map);
@@ -347,6 +352,7 @@ int main(int argc, char** argv)
 
 		namedWindow("raw disparity", WINDOW_AUTOSIZE);
 		imshow("raw disparity", left_disp_vis);
+		imwrite(dst_raw_path, left_disp_vis);
 
 		//-- Check its extreme values
 		//double minVal; double maxVal;
@@ -360,6 +366,7 @@ int main(int argc, char** argv)
 
 		namedWindow("filtered disparity", WINDOW_AUTOSIZE);
 		imshow("filtered disparity", filtered_disp);
+		imwrite(dst_path, filtered_disp);
 		waitKey();
 		//! [visualization]
 	}
