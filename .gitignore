@@ -11,3 +11,4 @@
 *.VC.VC.opendb
 /.vs/
 /x64/
+/result/
